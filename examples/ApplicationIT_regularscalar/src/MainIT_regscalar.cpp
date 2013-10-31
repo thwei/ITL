@@ -167,6 +167,24 @@ int main( int argc, char** argv )
 		printf( "Entering serial computation of global joint entropy of the regular scalar field ...\n" );	
 		compute_globaljointentropy_serial();
 		break;
+	///ADDED BY Tzu-Hsuan -- BEGIN 10/29/2013
+	case 6:
+		printf("Bin Selection\n");
+		scalarFieldData = ITL_ioutil<float>::readFieldBinarySerial( scalarFieldFile, nDim, dataDim );
+		highF[0] = dataDim[0]-1.0f;
+		highF[1] = dataDim[1]-1.0f;
+		highF[2] = dataDim[2]-1.0f;
+		scalarField = new ITL_field_regular<SCALAR>( scalarFieldData,			 nDim, lowF, highF,
+												 lowPad, highPad,
+												 sizeNeighborhoodArray );
+		int binnumber;
+	 	binnumber = histogram->Doanes(scalarField);
+		printf("Doanes:%d\n",binnumber);
+		binnumber = histogram->Scotts_Normal_Reference_Rule(scalarField);
+		printf("Scotts_Normal_Reference_Rule:%d\n",binnumber);
+		break;
+	///ADDED BY Tzu-Hsuan -- END 10/29/2013
+
 	default:
 		break;
 	}// end switch
@@ -548,7 +566,6 @@ void compute_globaljointentropy_serial()
 
 }// end function
 // ADD-BY-Abon 07/19/2011-END
-
 
 
 
