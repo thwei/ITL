@@ -163,6 +163,81 @@ public:
 		return z*fieldsize[1]*fieldsize[0] + y*fieldsize[0] + x;
 	}// End function
 
+	/**	
+	** meav value of data
+	*/	
+	static SCALAR
+	mean(SCALAR* array, int len)
+	{
+		SCALAR sum=0;
+		SCALAR meanV;
+
+		for(int i=0;i<len;i++)
+			sum += array[i];
+		meanV = sum/len;
+	
+		return meanV;
+	}	
+
+
+	/**
+	 * standard deviation of data
+	 */
+	static SCALAR
+	std_var(SCALAR* array, int len)
+	{		
+		SCALAR m2=0.0f;
+		SCALAR sum=0;
+		SCALAR Vmean;
+
+		for(int i=0;i<len;i++)
+		sum += array[i];
+		Vmean = sum/len;
+
+		for(int i=0;i<len;i++)
+			m2 += (array[i]-Vmean)*(array[i]-Vmean);
+
+		m2 = sqrtf(m2/len);
+
+		return m2;
+
+	}
+
+	/**	
+	** skewness value of data
+	*/
+	static SCALAR
+	skew_ness(SCALAR* array, int len)
+	{
+		SCALAR skew;
+		SCALAR m3=0,m2=0;
+		SCALAR sum=0;
+		SCALAR Vmean;
+
+		for(int i=0;i<len;i++)
+			sum += array[i];
+		Vmean = sum/len;
+
+		for(int i=0;i<len;i++)
+		{
+			m3 += pow((array[i]-Vmean),3.0);
+			
+			m2 += (array[i]-Vmean)*(array[i]-Vmean);
+		}
+
+		m3 = m3/len;
+		m2 = sqrtf(m2/len);
+
+		if(m3==0 || m2==0)
+			skew= 0;
+		else
+			skew = m3/(m2*m2*m2);
+
+		return skew;
+	}
+
+
+
 	/**
 	 * Tri-linear interpolation
 	 */
