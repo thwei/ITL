@@ -634,6 +634,7 @@ ITL_histogram::setHistogramRange_h( SCALAR minR, SCALAR maxR )
 }
 
 
+
 void
 ITL_histogram::computeFrequencies_h( int nPoint, int *binIds, double *freqArray )
 {
@@ -642,3 +643,170 @@ ITL_histogram::computeFrequencies_h( int nPoint, int *binIds, double *freqArray 
 		freqArray[ binIds[i] ] ++;
 }
 
+
+//ADD BY TZU_HSUAN - BEGIN 10/25/2013
+int ITL_histogram::Doanes(ITL_field_regular<SCALAR> *scalarField)
+{
+	double skew;
+	double n=scalarField->getSize();
+
+	skew = ITL_util<SCALAR>::skew_ness((SCALAR*)scalarField->getDataFull(), scalarField->getSize());
+
+	double var_skew = sqrtf((6.0*(n-2))/((n+1.0)*(n+3.0)));
+	double temp = 1.0 + fabs(skew)/var_skew;
+
+	int bin_number = 1.0 + log(n)/log(2.0) + log(temp)/log(2.0) + 0.5;
+
+	//SCALAR minValue = ITL_util<SCALAR>::Min( (SCALAR*)scalarField->getDataFull(), scalarField->getSize() );
+        //SCALAR maxValue = ITL_util<SCALAR>::Max( (SCALAR*)scalarField->getDataFull(), scalarField->getSize() );
+
+	//double bin_width = (maxValue-minValue)/(bin_number-1);
+
+	return bin_number;
+}
+
+int ITL_histogram::Scotts_Normal_Reference_Rule(ITL_field_regular<SCALAR> *scalarField)
+{
+	double n=scalarField->getSize();
+
+	double r = -(1.0/3.0);
+	double temp = pow(n,r);
+	double stdv = ITL_util<SCALAR>::std_var((SCALAR*)scalarField->getDataFull(), scalarField->getSize());
+	
+	double bin_width = 3.5 * stdv * temp;
+		
+	SCALAR minValue = ITL_util<SCALAR>::Min( (SCALAR*)scalarField->getDataFull(), scalarField->getSize() );
+        SCALAR maxValue = ITL_util<SCALAR>::Max( (SCALAR*)scalarField->getDataFull(), scalarField->getSize() );
+
+	int bin_number = (maxValue-minValue)/bin_width + 0.5;
+	bin_number++;
+
+	return bin_number;
+}
+
+
+int ITL_histogram::FreedmanDiaconisRule( ITL_field_regular<SCALAR> *scalarField)
+{
+}
+
+int ITL_histogram::ShimazakiBinSelection(ITL_field_regular<SCALAR> *scalarField)
+{
+}
+
+void ITL_histogram::CreateRandomSample(ITL_field_regular<SCALAR> *scalarField, float *sample_data, int &number_sample, double percentage)
+{
+	//get number of sample depneds on sample percentage input by user
+	int data_size = scalarField->getSize();
+	SCALAR data_value;
+
+	number_sample = percentage*data_size + 0.5;
+
+	double rand_sample;
+	int temp_loc;
+	int random_digit;
+	int digit = ceil(log((float)data_size)/log(10.0));
+	bool same_flag;
+
+	sample_data = new float [number_sample];
+
+	srand((unsigned)time(NULL));
+
+	for(int idx=0;idx<number_sample;idx++)
+	{
+		do
+		{				
+			same_flag = false;
+			rand_sample = 0;
+			for(int j=0;j<digit;j++)
+			{
+				random_digit = rand()%10;
+				rand_sample += random_digit*(1.0/pow(10.0f,j+1));
+			}
+
+			temp_loc = rand_sample * (data_size-1) + 0.5;
+
+			for(int j=0;j<idx;j++)
+			{
+				if(temp_loc == sample_data[j])
+				{
+					same_flag = true;					
+					break;
+				}
+			}
+
+		}while(same_flag);
+
+		data_value = scalarField->getDataAt(temp_loc);
+		sample_data[idx] = data_value;
+
+	}
+}
+
+
+int ITL_histogram::QueryBinNum(ITL_field_regular<SCALAR> *scalarField)
+{
+	float *sample_data=NULL;
+	int number_sample;
+	int bin_number;
+	double bin_width;
+	double sample_percentage;
+
+	CreateRandomSample(scalarField,sample_data,number_sample,sample_percentage);
+	
+	// call 4 algorithm and compare the error, then pick up one algorithm and return back the bin number
+	//to be constructed
+
+	return bin_number;
+
+}
+
+int ITL_histogram::QueryBinNum(ITL_field_regular<SCALAR> *scalarField, double v_low, double v_high)
+{
+	float *sample_data=NULL;
+	int number_sample;
+	int bin_number;
+	double sample_percentage;
+
+	CreateRandomSample(scalarField,sample_data,number_sample,sample_percentage);
+	
+	// call 4 algorithm and compare the error, then pick up one algorithm and return back the bin number
+	//to be constructed
+
+	return bin_number;
+
+}
+
+double ITL_histogram::QueryBinWidth(ITL_field_regular<SCALAR> *scalarField)
+{
+	float *sample_data;
+	int number_sample;
+	int bin_number;
+	double bin_width;
+	double sample_percentage;
+
+	CreateRandomSample(scalarField,sample_data,number_sample,sample_percentage);
+	
+	// call 4 algorithm and compare the error, then pick up one algorithm and return back the bin number
+	//to be constructed
+
+	return bin_width;
+}
+
+double ITL_histogram::QueryBinWidth(ITL_field_regular<SCALAR> *scalarField, double v_low, double v_high)
+{
+	float *sample_data;
+	int number_sample;
+	int bin_number;
+	double bin_width;
+	double sample_percentage;
+
+	CreateRandomSample(scalarField,sample_data,number_sample,sample_percentage);
+	
+	// call 4 algorithm and compare the error, then pick up one algorithm and return back the bin number
+	//to be constructed
+
+	return bin_width;
+}
+
+
+//ADD BY TZU_HSUAN - END 10/25/2013
