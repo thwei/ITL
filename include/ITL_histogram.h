@@ -53,6 +53,19 @@ public:
 	bool hist_RangeSet;
 	// ADD-BY-Tzu-Hsuan-END-02/13
 
+	// ADD-BY-Tzu-Hsuan-BEGIN-10/2013
+	int Doanes(ITL_field_regular<SCALAR> *scalarField);
+	int Scotts_Normal_Reference_Rule(ITL_field_regular<SCALAR> *scalarField);
+	int FreedmanDiaconisRule(ITL_field_regular<SCALAR> *scalarField);
+	int ShimazakiBinSelection(ITL_field_regular<SCALAR> *scalarField);
+	int QueryBinNum(ITL_field_regular<SCALAR> *scalarField);
+	int QueryBinNum(ITL_field_regular<SCALAR> *scalarField, double v_low, double v_high);
+	double QueryBinWidth(ITL_field_regular<SCALAR> *scalarField);
+	double QueryBinWidth(ITL_field_regular<SCALAR> *scalarField, double v_low, double v_high);
+	void CreateRandomSample(ITL_field_regular<SCALAR> *scalarField, float *sample_data, int &number_sample, double percentage);
+	// ADD-BY-Tzu-Hsuan-END-10/2013
+
+
 
 public:
 
